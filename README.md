@@ -2,21 +2,21 @@
 
 An automated, AI-powered job application processing workflow built on **n8n**.
 
-**Job Application Autopilot** automates the end-to-end workflow when applying for jobs or evaluating job applications. It collects application details and CVs via a form, extracts text from Google Drive PDFs, evaluates candidate fit using an evidence-based 100-point AI scoring rubric (powered by **Mistral AI**), generates a tailored cover letter, sends an email summary to the candidate, logs everything in **Google Sheets**, and creates a **7-day follow-up event in Google Calendar**.
-
 ---
 
-## 🌟 Key Features
+# 1. 📖 WHAT IT DOES
 
-- 📋 **Form Trigger Submission**: User-friendly submission form collecting applicant details, target position, company, job description, portfolio link, and Google Drive CV link.
-- 📥 **Google Drive & PDF Parsing**: Automatically downloads the candidate CV from Google Drive and extracts readable text.
-- 🧠 **AI Fit Scoring Engine (Mistral AI)**: Evaluates the candidate strictly against the job description using a 100-point evidence-based rubric (no AI hallucinations allowed).
-- ✍️ **Automated Cover Letter Generation**: Generates a professional 250–350 word cover letter connecting CV achievements directly to the job requirements.
-- 📧 **Gmail Integration**: Sends an instant email notification containing the fit score, evidence breakdown, matching/missing skills, and custom cover letter (with built-in fallback error handling if PDF extraction fails).
-- 📊 **Google Sheets Application Tracker**: Logs every application ID, fit score, confidence score, matching skills, missing skills, and detailed reasoning into a Google Sheet.
-- 📅 **Automated 7-Day Follow-Up (Google Calendar)**: Automatically schedules a calendar entry 7 days post-submission to remind you to follow up with the hiring team.
+**Job Application Autopilot** automates the end-to-end process of submitting, scoring, and tracking job applications using AI and Google Workspace integrations.
 
----
+## 🌟 Key Capabilities & Workflow Features
+
+- 📋 **Form Submission Processing**: Collects candidate details, job title, company name, job description, portfolio URL, and Google Drive CV link via an interactive n8n form trigger.
+- 📥 **Automated CV Retrieval & Text Extraction**: Downloads the candidate's CV from Google Drive and extracts PDF text for analysis.
+- 🧠 **AI-Powered CV Fit Scoring (Mistral AI)**: Evaluates the candidate CV against the job description using a strict 100-point evidence-based rubric (zero hallucination policy).
+- ✍️ **Tailored Cover Letter Generation**: Generates a custom 250–350 word cover letter connecting explicit CV achievements directly to job requirements.
+- 📧 **Automated Email Notifications (Gmail)**: Emails the candidate/applicant a full breakdown of their fit score, matching skills, skill gaps, and generated cover letter (includes fallback error notifications if PDF parsing fails).
+- 📊 **Centralized Spreadsheet Tracking (Google Sheets)**: Logs all application records, application IDs (`APP-YYYYMMDD-HHMMSS`), scores, matching/missing skills, and detailed reasoning into Google Sheets.
+- 📅 **Automated 7-Day Follow-Up Reminder (Google Calendar)**: Automatically schedules a calendar entry 7 days post-submission to remind you to follow up with the hiring manager.
 
 ## 🏗️ Workflow Architecture
 
@@ -39,11 +39,7 @@ graph TD
     I --> J3[Google Calendar: 7-Day Follow-Up Event]
 ```
 
----
-
 ## 📊 100-Point Evidence-Based Scoring Rubric
-
-The AI model evaluates the CV against the Job Description strictly using explicit evidence present in the CV:
 
 | Category | Max Score | Description |
 | :--- | :---: | :--- |
@@ -59,51 +55,55 @@ The AI model evaluates the CV against the Job Description strictly using explici
 
 ---
 
+# 2. 🚀 HOW TO USE
+
+Follow these steps to import, configure, and execute the workflow in your n8n environment.
+
+### Step 1: Prerequisites
+Before starting, ensure you have:
+1. An active **n8n** instance (n8n Cloud or Self-Hosted).
+2. A **Mistral AI API Key** (configured for `magistral-small-latest`).
+3. Google Workspace credentials connected in n8n for:
+   - **Google Drive OAuth2** (to download CVs)
+   - **Gmail OAuth2** (to send emails)
+   - **Google Sheets OAuth2** (to log application data)
+   - **Google Calendar OAuth2** (to create follow-up reminders)
+
+### Step 2: Import `workflow.json` into n8n
+1. Download or clone this repository.
+2. Log into your **n8n Dashboard**.
+3. Go to **Workflows** -> click **Import from File**.
+4. Select `workflow.json` from this repository.
+
+### Step 3: Configure Node Credentials
+In n8n, edit the imported workflow nodes to assign your credentials:
+1. **Google Drive - Download CV**: Select your Google Drive OAuth2 credential.
+2. **Mistral Chat Model**: Select your Mistral Cloud API credential.
+3. **Gmail - Send Cover Letter / Fallback Message**: Select your Gmail OAuth2 credential.
+4. **Google Sheets - Log Application**: Select your Google Sheets OAuth2 credential and select your target tracking spreadsheet.
+5. **Google Calendar - 7 Day Follow-up**: Select your Google Calendar OAuth2 credential and set your primary calendar ID.
+
+### Step 4: Activate & Test the Workflow
+1. Click the **Active** toggle switch in n8n to enable the workflow.
+2. Open the **Job Application Form** trigger node to obtain your form URL.
+3. Fill out the form with test candidate data and a Google Drive CV link.
+4. Submit the form and verify that:
+   - An email is received via Gmail with the fit score and cover letter.
+   - A new row is appended to your Google Sheet tracker.
+   - A follow-up event is created in Google Calendar 7 days from today.
+
+---
+
 ## 📁 Repository Structure
 
 ```
 .
 ├── workflow.json    # Complete exported n8n workflow JSON definition
-└── README.md        # Project documentation & setup guide
+└── README.md        # Project documentation
 ```
-
----
-
-## 🚀 Setup & Setup Instructions
-
-### 1. Prerequisites
-- An active **n8n** instance (n8n Cloud or Self-Hosted)
-- A **Mistral AI API Key** (configured for `magistral-small-latest` or equivalent)
-- A **Google Cloud / Workspace** account with access to:
-  - Google Drive OAuth2
-  - Google Sheets OAuth2
-  - Google Calendar OAuth2
-  - Gmail OAuth2
-
-### 2. Importing into n8n
-1. Open your n8n dashboard.
-2. Click **Workflows** -> **Import from File**.
-3. Select `workflow.json` from this repository.
-
-### 3. Credential Setup in n8n
-In n8n, re-bind or assign your credentials for:
-- **Google Drive OAuth2 API**: Access to download candidate CVs.
-- **Mistral Cloud API**: API key for the LLM node.
-- **Gmail OAuth2**: Authorized email sender.
-- **Google Sheets OAuth2 API**: Selected spreadsheet for tracking applications.
-- **Google Calendar OAuth2 API**: Target calendar for 7-day follow-up reminders.
-
-### 4. Configuration Updates
-- In **Google Sheets - Log Application**, ensure your spreadsheet ID and sheet tab are linked.
-- In **Google Calendar - 7 Day Follow-up**, ensure your calendar ID / target email address is specified.
-
-### 5. Activation
-Toggle the workflow switch from `Inactive` to **`Active`**. Submit a test response using the Form Trigger URL to verify execution!
-
----
 
 ## 🛠️ Built With
 
 - [n8n](https://n8n.io/) - Workflow Automation Platform
-- [Mistral AI](https://mistral.ai/) - LLM for CV Analysis & Cover Letter Generation
+- [Mistral AI](https://mistral.ai/) - LLM Engine
 - [Google Workspace APIs](https://workspace.google.com/) - Google Drive, Sheets, Calendar, Gmail
